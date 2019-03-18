@@ -2249,6 +2249,18 @@ k8s_resource(result[1]["baz"][0], 'bar.yaml')
 	f.loadErrString("JSON parsing error: unexpected end of JSON input")
 }
 
+func TestUnknownFastBuildAttr(t *testing.T) {
+	f := newFixture(t)
+	defer f.TearDown()
+
+	f.setupFoo()
+	f.file("Tiltfile", `
+fb = fast_build('gcr.io/foo', 'foo/Dockerfile')
+fb.asdf()
+`)
+	f.loadErrString("no attribute named 'asdf'", "known attributes: add, run, hot_reload")
+}
+
 type fixture struct {
 	ctx context.Context
 	t   *testing.T

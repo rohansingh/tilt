@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
+	"strings"
 
 	"github.com/docker/distribution/reference"
 	"github.com/pkg/errors"
@@ -395,12 +396,12 @@ func (b *fastBuild) Attr(name string) (starlark.Value, error) {
 	case hotReloadN:
 		return starlark.NewBuiltin(name, b.hotReload), nil
 	default:
-		return starlark.None, nil
+		return starlark.None, fmt.Errorf("object has no attribute named '%s'; known attributes: %s", name, strings.Join(b.AttrNames(), ", "))
 	}
 }
 
 func (b *fastBuild) AttrNames() []string {
-	return []string{addN, runN}
+	return []string{addN, runN, hotReloadN}
 }
 
 func (b *fastBuild) hotReload(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
